@@ -1,11 +1,12 @@
 module Geopsy.Component.Router where
 
-import Data.Maybe
 import Prelude
 
+import Data.Maybe (Maybe(..))
 import Data.Symbol (SProxy(..))
-import Geopsy.Component.Utils (OpaqueSlot)
-import Geopsy.Data.Route (Route(..))
+import Effect.Class (class MonadEffect)
+--import Geopsy.Component.Utils (OpaqueSlot)
+import Geopsy.Data.Route (Route(..), routeCodec)
 import Geopsy.Page.Home as Home
 import Geopsy.Page.Login as Login
 import Geopsy.Page.Register as Register
@@ -13,6 +14,8 @@ import Geopsy.Page.ViewMap as ViewMap
 import Halogen as H
 import Halogen.HTML as HH
 import Profile (Profile)
+import Routing.Duplex (print)
+import Routing.Hash (setHash)
 
 type State =
   { route :: Maybe Route
@@ -22,18 +25,25 @@ type State =
 data Query a
   = Navigate Route a
 
--- for now this is meaningless
 data Action
   = Initialize
 
+-- type ChildSlots =
+--   ( home :: OpaqueSlot Unit
+--   , login :: OpaqueSlot Unit
+--   , register :: OpaqueSlot Unit
+--   , viewMap :: OpaqueSlot Unit
+--   )
+type OpaqueSlot = forall query. H.Slot query Void Unit
+
 type ChildSlots =
-  ( home :: OpaqueSlot Unit
-  , login :: OpaqueSlot Unit
-  , register :: OpaqueSlot Unit
-  , viewMap :: OpaqueSlot Unit
+  ( home     :: OpaqueSlot
+  , login    :: OpaqueSlot
+  , register :: OpaqueSlot
+  , viewMap  :: OpaqueSlot
   )
 
-component :: forall m. H.Component HH.HTML Query {} Void m
+component :: forall m. MonadEffect m => H.Component HH.HTML Query {} Void m
 component = H.mkComponent
   { initialState: \_ -> { route: Nothing, currentUser: Nothing }
   , render
@@ -41,13 +51,14 @@ component = H.mkComponent
       { handleQuery = handleQuery
       , handleAction = handleAction
       , initialize = Just Initialize
-
       }
   }
   where
-    handleAction :: Action -> H.HalogenM State Action ChildSlots Void m Unit
+    handleAction :: MonadEffect m => Action -> H.HalogenM State Action ChildSlots Void m Unit
     handleAction = case _ of
-      Initialize -> pure unit
+      Initialize -> do
+        H.liftEffect <<< setHash <<< print routeCodec $ ViewMap
+        pure unit
   
     handleQuery :: forall a. Query a -> H.HalogenM State Action ChildSlots Void m (Maybe a)
     handleQuery = case _ of
@@ -73,7 +84,3 @@ component = H.mkComponent
         HH.div_ [ HH.text "Oh no! That page wasn't found." ]
 
           
-
-
-
-

@@ -25,5 +25,5 @@ routeCodec = root $ sum
   { "Home": noArgs
   , "Login": "login" / noArgs
   , "Register": "register" / noArgs
-  , "ViewMap": "map-view" / noArgs
+  , "ViewMap": "view-map" / noArgs
   }
