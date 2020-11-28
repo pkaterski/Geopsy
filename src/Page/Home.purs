@@ -2,6 +2,8 @@ module Geopsy.Page.Home where
 
 import Prelude
 
+import Geopsy.Component.HTML.Header (header)
+import Geopsy.Data.Route (Route(..))
 import Halogen as H
 import Halogen.HTML as HH
 
@@ -14,4 +16,8 @@ component = H.mkComponent
   }
   where 
     render :: forall a s. s -> H.ComponentHTML a () m
-    render _ = HH.h1_ [ HH.text "Home" ]
+    render _ =
+      HH.div_
+        [ header Home
+        , HH.h1_ [ HH.text "Home" ]
+        ]
