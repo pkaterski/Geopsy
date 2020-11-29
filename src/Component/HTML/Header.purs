@@ -19,9 +19,9 @@ header route =
             , HH.ClassName "bg-success"
             ]
         ]
-        [ HH.a
+        [ HH.span
             [ HP.classes [ HH.ClassName "navbar-brand" ]
-            , HP.href "#" ]
+            ]
             [ HH.text "Geopsy" ]
         , HH.button
             [ HP.classes [ HH.ClassName "navbar-toggler" ]
